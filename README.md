@@ -10,10 +10,8 @@ Modified to work on libreELEC:
 Added some comments, outputs and install hints:
     -> Miroslav Kuhajda
 
-Tested ( by me ) only:
-    -> on RaspberryPi 3B with LibreELEC v9.2.8
-    -> with "HighPi Pro 5V Fan - Software-Controlled" PWM FAN
-    -> run by Python version 2.7.16
+Migrated from RPi.GPIO to gpiozero (libreelec 12)
+
 ```
 ## Minimal requirements
 ```
@@ -77,6 +75,7 @@ Description=Fan PWM Service
 
 [Service]
 Type=simple
+WorkingDirectory=/tmp
 ExecStart=/usr/bin/python /storage/bin/pifanpwm.py
 StandardOutput=journal
 StandardError=journal

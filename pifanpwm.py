@@ -11,7 +11,8 @@ import signal
 import sys
 from datetime import datetime
 sys.path.append('/storage/.kodi/addons/virtual.rpi-tools/lib')
-import RPi.GPIO as GPIO
+import lgpio
+import gpiozero
 
 ### Some basic configuration.
 FAN_PIN = 8   ### RaspberryPi GPIO PI used to drive transistor's base
@@ -39,11 +40,7 @@ speedSteps = [0,  0,  0,  25, 50, 75, 100]  ### [%]
 hyst = 1
 
 ### Setup GPIO pin
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(FAN_PIN, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setwarnings(False)
-fan = GPIO.PWM(FAN_PIN, PWM_FREQ)
-fan.start(0)
+fan = gpiozero.LEDPWM(FAN_PIN)
 
 i = 0
 cpuTemp = 0
@@ -88,7 +85,7 @@ try:
                     t_local = now.strftime("%H:%M:%S")
                     print("date_local='{dl}', time_local='{tl}', cpu_temp='{ct}' ( last_value='{cto}' ), fan_speed='{fs}' ( last_value='{fso}' )".format(dl=d_local, tl=t_local, ct=cpuTemp, fs=fanSpeed, cto=cpuTempOld, fso=fanSpeedOld))
                     ### Change variables and fan speed
-                    fan.ChangeDutyCycle(fanSpeed)
+                    fan.value = fanSpeed / 100.0
                     fanSpeedOld = fanSpeed
             cpuTempOld = cpuTemp
 
@@ -98,5 +95,5 @@ try:
 ### If a keyboard interrupt occurs (ctrl + c), the GPIO is set to 0 and the program exits.
 except KeyboardInterrupt:
     print("PWM fan control script interrupted")
-    GPIO.cleanup()
+    fan.off()
     sys.exit()
